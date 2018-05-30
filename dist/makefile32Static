@@ -1,0 +1,61 @@
+IDIR =-I/home/girgishz/cppLib/HMMlib/include -I/home/girgishz/cppLib/boost_1_47_0/include
+LDIR =-L/home/girgishz/cppLib/HMMlib/include -L/usr/local/gcc/4.4.5/lib
+WL   =-Wl,-Bstatic
+CC=g++
+OPTFLAGS= -O3
+
+all: MsDetector NucleotideFreqMaker MsDetectorOptimized
+
+MsDetector: ScoresMaker.o ScoresMatrixMaker.o ScoresBiasMaker.o Coordinator.o  InvalidOrderOfOperationsException.o InvalidScoreException.o Util.o FileDoesNotExistException.o InvalidInputException.o CompositionMatrix.o TransitionCompositionMatrix.o MsDetector.o 
+	$(CC) $(OPTFLAGS) -msse4 -static-libgcc $(LDIR) $(WL) -o MsDetector ScoresMaker.o ScoresMatrixMaker.o ScoresBiasMaker.o Coordinator.o Util.o InvalidOrderOfOperationsException.o InvalidScoreException.o FileDoesNotExistException.o InvalidInputException.o CompositionMatrix.o TransitionCompositionMatrix.o MsDetector.o
+
+MsDetectorOptimized: ScoresMaker.o ScoresMatrixMaker.o ScoresBiasMaker.o Coordinator.o  InvalidOrderOfOperationsException.o InvalidScoreException.o Util.o FileDoesNotExistException.o InvalidInputException.o CompositionMatrix.o TransitionCompositionMatrix.o MsDetectorOptimized.o 
+	$(CC) $(OPTFLAGS) -msse4 -static-libgcc $(LDIR) $(WL) -o MsDetectorOptimized ScoresMaker.o ScoresMatrixMaker.o ScoresBiasMaker.o Coordinator.o Util.o InvalidOrderOfOperationsException.o InvalidScoreException.o FileDoesNotExistException.o InvalidInputException.o CompositionMatrix.o TransitionCompositionMatrix.o MsDetectorOptimized.o
+
+NucleotideFreqMaker: NucleotideFreqMaker.o Util.o FileDoesNotExistException.o InvalidInputException.o
+	$(CC) $(OPTFLAGS) -o NucleotideFreqMaker NucleotideFreqMaker.o Util.o FileDoesNotExistException.o InvalidInputException.o
+
+CompositionMatrix.o: CompositionMatrix.cpp CompositionMatrix.h Util.h InvalidInputException.h
+	$(CC) $(OPTFLAGS) -c CompositionMatrix.cpp
+
+TransitionCompositionMatrix.o: TransitionCompositionMatrix.cpp TransitionCompositionMatrix.h CompositionMatrix.h
+	$(CC) $(OPTFLAGS) -c TransitionCompositionMatrix.cpp
+	
+ScoresMaker.o: ScoresMaker.cpp ScoresMaker.h Util.h InvalidScoreException.h
+	$(CC) $(OPTFLAGS) -c ScoresMaker.cpp
+
+ScoresMatrixMaker.o: ScoresMatrixMaker.cpp ScoresMatrixMaker.h ScoresMaker.h
+	$(CC) $(OPTFLAGS) -c ScoresMatrixMaker.cpp
+
+ScoresBiasMaker.o: ScoresBiasMaker.cpp ScoresBiasMaker.h ScoresMaker.h
+	$(CC) $(OPTFLAGS) -c ScoresBiasMaker.cpp
+
+InvalidOrderOfOperationsException.o: InvalidOrderOfOperationsException.cpp InvalidOrderOfOperationsException.h
+	$(CC) $(OPTFLAGS) -c InvalidOrderOfOperationsException.cpp		
+	
+InvalidScoreException.o: InvalidScoreException.cpp InvalidScoreException.h
+	$(CC) $(OPTFLAGS) -c InvalidScoreException.cpp	
+
+FileDoesNotExistException.o: FileDoesNotExistException.cpp FileDoesNotExistException.h
+	$(CC) $(OPTFLAGS) -c FileDoesNotExistException.cpp
+
+InvalidInputException.o: InvalidInputException.cpp InvalidInputException.h
+	$(CC) $(OPTFLAGS) -c InvalidInputException.cpp
+	
+Util.o: Util.cpp Util.h FileDoesNotExistException.h InvalidInputException.h
+	$(CC) $(OPTFLAGS) -c Util.cpp
+
+Coordinator.o: Coordinator.cpp Coordinator.h ScoresMaker.h ScoresMatrixMaker.h ScoresBiasMaker.h CompositionMatrix.h InvalidOrderOfOperationsException.h
+	$(CC) $(OPTFLAGS) -msse4 $(IDIR) -c Coordinator.cpp
+	
+MsDetector.o: MsDetector.cpp Coordinator.h Util.h CompositionMatrix.h TransitionCompositionMatrix.h
+	$(CC) $(OPTFLAGS) -msse4 $(IDIR) -c MsDetector.cpp
+	
+MsDetectorOptimized.o: MsDetectorOptimized.cpp Coordinator.h Util.h
+	$(CC) $(OPTFLAGS) -msse4 $(IDIR) -c MsDetectorOptimized.cpp	
+	
+NucleotideFreqMaker.o: NucleotideFreqMaker.cpp Util.h
+	$(CC) $(OPTFLAGS) -c NucleotideFreqMaker.cpp
+
+clean:
+	\rm *.o MsDetector MsDetectorOptimized NucleotideFreqMaker
